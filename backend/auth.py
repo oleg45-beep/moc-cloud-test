@@ -501,4 +501,5 @@ def test_db():
         }), 500
     finally:
         if conn:
+
             conn.close()
