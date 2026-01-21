@@ -11,8 +11,22 @@
     <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- CSS -->
+    <!-- CSS файл -->
     <link rel="stylesheet" href="style.css">
+        
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💜</text></svg>">
+    
+    <style>
+        /* Временный стиль до загрузки основного CSS */
+        body {
+            background: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
     <!-- Навигация -->
@@ -30,9 +44,18 @@
                 <a href="#photos" class="nav-link">
                     <i class="fas fa-images"></i> Мои фото
                 </a>
+                <a href="#albums" class="nav-link">
+                    <i class="fas fa-folder"></i> Альбомы
+                </a>
+                <a href="#chats" class="nav-link">
+                    <i class="fas fa-comments"></i> Чаты
+                </a>
+                <a href="#profile" class="nav-link">
+                    <i class="fas fa-user"></i> Профиль
+                </a>
             </div>
             
-            <div class="user-menu">
+            <div class="user-menu" id="userMenu">
                 <button id="loginBtn" class="btn btn-outline">
                     <i class="fas fa-sign-in-alt"></i> Войти
                 </button>
@@ -63,11 +86,27 @@
                     <i class="fas fa-robot"></i>
                     <span>AI-ассистент</span>
                 </div>
+                <div class="feature">
+                    <i class="fas fa-comments"></i>
+                    <span>Безопасные чаты</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-images"></i>
+                    <span>Авто-альбомы</span>
+                </div>
             </div>
             
             <button id="getStarted" class="btn btn-primary btn-large">
                 <i class="fas fa-rocket"></i> Начать использовать
             </button>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="cloud-animation">
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+            </div>
         </div>
     </section>
 
@@ -86,21 +125,488 @@
             </div>
             
             <div class="assistant-message">
-                <p>"Привет! Я Олег — ваш помощник в облаке MOC."</p>
+                <p>
+                    "Привет! Я Олег — ваш помощник в облаке MOC. 
+                    Помогу создать альбомы, найти фото и обеспечу безопасность ваших данных. 
+                    Все вычисления происходят локально на вашем устройстве!"
+                </p>
             </div>
             
             <div class="assistant-actions">
-                <button class="action-btn">
+                <button onclick="mocAssistant.reportBug()" class="action-btn">
                     <i class="fas fa-bug"></i> Сообщить об ошибке
                 </button>
-                <button class="action-btn">
+                <button onclick="mocAssistant.startChat()" class="action-btn">
                     <i class="fas fa-comment-dots"></i> Начать диалог
+                </button>
+                <button onclick="alert('AI альбомы скоро будут доступны!')" class="action-btn">
+                    <i class="fas fa-images"></i> AI альбомы
+                </button>
+                <button onclick="mocAssistant.showHelp()" class="action-btn">
+                    <i class="fas fa-question-circle"></i> Помощь
                 </button>
             </div>
         </div>
     </section>
 
+    <!-- Загрузка файлов -->
+    <section id="upload" class="upload-section">
+        <div class="container">
+            <div class="section-header">
+                <h2><i class="fas fa-cloud-upload-alt"></i> Загрузка файлов</h2>
+            </div>
+            
+            <!-- ЗОНА ЗАГРУЗКИ -->
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt fa-3x"></i>
+                <p id="uploadText">Перетащите файлы сюда или кликните для выбора</p>
+                <span class="encryption-status">
+                    <i class="fas fa-shield-alt"></i> Все файлы шифруются локально
+                </span>
+                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
+            </div>
+            
+            <!-- ПРОГРЕСС БАР -->
+            <div id="uploadProgress" class="progress-container"></div>
+            
+            <!-- СТАТИСТИКА -->
+            <div class="upload-stats" id="uploadStats" style="display: none;">
+                <div class="stat">
+                    <div class="stat-value" id="totalPhotos">0</div>
+                    <div class="stat-label">Фото</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="totalAlbums">0</div>
+                    <div class="stat-label">Альбомов</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="storageUsed">0%</div>
+                    <div class="stat-label">Хранилище</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Мои фото -->
+    <section id="photos" class="photos-section">
+        <div class="section-header">
+            <h2><i class="fas fa-images"></i> Мои фото</h2>
+            <div class="header-actions">
+                <button onclick="updatePhotosUI()" class="btn btn-outline" id="refreshPhotosBtn">
+                    <i class="fas fa-sync-alt"></i> Обновить
+                </button>
+                <button onclick="clearAllPhotos()" class="btn btn-danger" id="clearPhotosBtn">
+                    <i class="fas fa-trash"></i> Очистить все
+                </button>
+            </div>
+        </div>
+        
+        <div class="upload-hint" id="uploadHint">
+            <i class="fas fa-info-circle"></i>
+            <span>Перетащите фото в зону загрузки выше или нажмите на неё</span>
+        </div>
+        
+        <div id="photosGrid" class="photos-grid">
+            <div class="photo-placeholder">
+                <i class="fas fa-images"></i>
+                <p>Загрузите первое фото</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Альбомы -->
+    <section id="albums" class="albums-section">
+        <div class="section-header">
+            <h2><i class="fas fa-folder"></i> Альбомы</h2>
+            <button onclick="showModal('createAlbumModal')" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Новый альбом
+            </button>
+        </div>
+        <div id="albumsGrid" class="albums-grid">
+            <div class="album-placeholder">
+                <i class="fas fa-folder-plus"></i>
+                <p>Создайте первый альбом</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Чаты -->
+    <section id="chats" class="chats-section">
+        <div class="section-header">
+            <h2><i class="fas fa-comments"></i> Чаты</h2>
+            <button onclick="showModal('createChatModal')" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Новый чат
+            </button>
+        </div>
+        <div id="chatsList" class="chats-list">
+            <div class="chat-placeholder">
+                <i class="fas fa-comments"></i>
+                <p>Начните новый чат</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Профиль -->
+    <section id="profile" class="profile-section">
+        <div class="section-header">
+            <h2><i class="fas fa-user"></i> Профиль</h2>
+        </div>
+        <div id="profileCard" class="profile-card">
+            <div class="profile-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Войдите для просмотра профиля</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fas fa-cloud"></i>
+                <span>MOC</span>
+            </div>
+            <div class="footer-links">
+                <a href="#privacy">Конфиденциальность</a>
+                <a href="#terms">Условия</a>
+                <a href="#support">Поддержка</a>
+                <a href="#about">О проекте</a>
+            </div>
+            <div class="footer-info">
+                <p>© 2025-2026 MOC - My Open Cloud. Все права защищены.</p>
+                <p>Ваши данные в безопасности 💜</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Плавающие кнопки -->
+    <div class="floating-buttons">
+        <button class="floating-btn bug-btn" onclick="mocAssistant.reportBug()" title="Сообщить об ошибке">
+            <i class="fas fa-bug"></i>
+        </button>
+        <button class="floating-btn assistant-btn" onclick="mocAssistant.startChat()" title="Чат с ботом">
+            <i class="fas fa-robot"></i>
+        </button>
+    </div>
+
+    <!-- Модальные окна -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2><i class="fas fa-sign-in-alt"></i> Вход в MOC</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername"><i class="fas fa-user"></i> Имя пользователя</label>
+                    <input type="text" id="loginUsername" placeholder="Введите имя пользователя" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fas fa-lock"></i> Пароль</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Введите пароль" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Войти
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="showRegisterModal()">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </button>
+                </div>
+            </form>
+            
+            <div class="modal-footer">
+                <a href="#" onclick="resetPassword()">Забыли пароль?</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2><i class="fas fa-user-plus"></i> Регистрация в MOC</h2>
+            
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regUsername"><i class="fas fa-user"></i> Имя пользователя</label>
+                    <input type="text" id="regUsername" placeholder="Придумайте имя пользователя" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regEmail"><i class="fas fa-envelope"></i> Email (необязательно)</label>
+                    <input type="email" id="regEmail" placeholder="email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPassword"><i class="fas fa-lock"></i> Пароль</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="regPassword" placeholder="Придумайте пароль" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('regPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="regPasswordConfirm"><i class="fas fa-lock"></i> Подтвердите пароль</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="regPasswordConfirm" placeholder="Повторите пароль" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('regPasswordConfirm')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="warning-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Внимание:</strong> Ваши данные зашифрованы локально. <strong>Сохраните мастер-ключ</strong>, который будет показан после регистрации. Без него нельзя восстановить доступ к файлам!
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Зарегистрироваться
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Уже есть аккаунт
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания альбома -->
+    <div id="createAlbumModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createAlbumModal')">&times;</span>
+            <h2><i class="fas fa-plus"></i> Создать альбом</h2>
+            
+            <form id="createAlbumForm">
+                <div class="form-group">
+                    <label for="albumTitle">Название альбома</label>
+                    <input type="text" id="albumTitle" placeholder="Название альбома" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="albumDescription">Описание (необязательно)</label>
+                    <textarea id="albumDescription" placeholder="Описание альбома" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="albumPrivate">
+                        <span>Приватный альбом</span>
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('createAlbumModal')">
+                        Отмена
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Создать альбом
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно создания чата -->
+    <div id="createChatModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createChatModal')">&times;</span>
+            <h2><i class="fas fa-plus"></i> Новый чат</h2>
+            
+            <form id="createChatForm">
+                <div class="form-group">
+                    <label for="chatTitle">Название чата</label>
+                    <input type="text" id="chatTitle" placeholder="Название чата" required>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('createChatModal')">
+                        Отмена
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Создать чат
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- JS -->
-    <script src="js/main.js"></script>
+    <script>
+        // Базовые функции
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Закрытие по клику вне модального окна
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // Переключение видимости пароля
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.parentElement.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        
+        // Показать окно входа
+        function showLoginModal() {
+            closeModal('registerModal');
+            showModal('loginModal');
+        }
+        
+        // Показать окно регистрации
+        function showRegisterModal() {
+            closeModal('loginModal');
+            showModal('registerModal');
+        }
+        
+        // Функции для фото (заглушки)
+        function updatePhotosUI() {
+            alert('Функция обновления фото будет доступна после загрузки JS файлов');
+        }
+        
+        function clearAllPhotos() {
+            if (confirm('Вы уверены, что хотите удалить все фото?')) {
+                alert('Функция очистки фото будет доступна после загрузки JS файлов');
+            }
+        }
+        
+        // Загрузчик по умолчанию
+        function resetPassword() {
+            alert('Функция сброса пароля пока не реализована');
+        }
+        
+        // Ассистент по умолчанию
+        window.mocAssistant = {
+            reportBug: function() {
+                alert('Функция сообщения об ошибке будет доступна после загрузки JS файлов');
+            },
+            startChat: function() {
+                alert('Чат с ассистентом будет доступен после загрузки JS файлов');
+            },
+            showHelp: function() {
+                alert('Помощь будет доступна после загрузки JS файлов');
+            }
+        };
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            // Привязка кнопок навигации
+            document.getElementById('loginBtn')?.addEventListener('click', showLoginModal);
+            document.getElementById('registerBtn')?.addEventListener('click', showRegisterModal);
+            document.getElementById('getStarted')?.addEventListener('click', showRegisterModal);
+            
+            // Загрузка файлов
+            const uploadZone = document.getElementById('uploadZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            if (uploadZone && fileInput) {
+                uploadZone.addEventListener('click', () => fileInput.click());
+                
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.style.backgroundColor = 'rgba(124, 58, 237, 0.2)';
+                });
+                
+                uploadZone.addEventListener('dragleave', () => {
+                    uploadZone.style.backgroundColor = '';
+                });
+                
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.style.backgroundColor = '';
+                    alert('Функция загрузки файлов будет доступна после загрузки JS файлов');
+                });
+                
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files.length > 0) {
+                        alert(`Выбрано ${fileInput.files.length} файлов. Функция загрузки будет доступна после загрузки JS файлов`);
+                    }
+                });
+            }
+            
+            // Обработка форм
+            document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Функция входа будет доступна после загрузки JS файлов');
+            });
+            
+            document.getElementById('registerForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Функция регистрации будет доступна после загрузки JS файлов');
+            });
+            
+            document.getElementById('createAlbumForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Функция создания альбома будет доступна после загрузки JS файлов');
+            });
+            
+            document.getElementById('createChatForm')?.addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Функция создания чата будет доступна после загрузки JS файлов');
+            });
+            
+            // Обновить статистику
+            setTimeout(() => {
+                const stats = document.getElementById('uploadStats');
+                if (stats) {
+                    stats.style.display = 'flex';
+                }
+            }, 1000);
+            
+            // Плавная прокрутка для навигации
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId !== '#') {
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            window.scrollTo({
+                                top: targetElement.offsetTop - 80,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
