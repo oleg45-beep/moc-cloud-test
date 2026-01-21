@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOC - My Open Cloud</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Шрифты -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-cloud"></i>
+                <span>MOC <span class="logo-sub">My Open Cloud</span></span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="#home" class="nav-link active">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="#photos" class="nav-link">
+                    <i class="fas fa-images"></i> Мои фото
+                </a>
+            </div>
+            
+            <div class="user-menu">
+                <button id="loginBtn" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i> Войти
+                </button>
+                <button id="registerBtn" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Регистрация
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Главный экран -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">MOC</h1>
+            <h2 class="hero-subtitle">Безопасное. Умное. <span class="purple">Твоё.</span> 💜</h2>
+            
+            <p class="hero-desc">
+                Первое облако с полной приватностью, AI-ассистентом и эмоциональным интеллектом. 
+                Твои данные принадлежат только тебе.
+            </p>
+            
+            <div class="hero-features">
+                <div class="feature">
+                    <i class="fas fa-lock"></i>
+                    <span>Клиентское шифрование</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-robot"></i>
+                    <span>AI-ассистент</span>
+                </div>
+            </div>
+            
+            <button id="getStarted" class="btn btn-primary btn-large">
+                <i class="fas fa-rocket"></i> Начать использовать
+            </button>
+        </div>
+    </section>
+
+    <!-- Ассистент -->
+    <section id="assistant" class="assistant-section">
+        <div class="assistant-card">
+            <div class="assistant-header">
+                <div class="assistant-avatar">
+                    <i class="fas fa-robot"></i>
+                    <div class="online-status online"></div>
+                </div>
+                <div class="assistant-info">
+                    <h3 class="assistant-name">Олег</h3>
+                    <p class="assistant-role">Ваш личный помощник MOC</p>
+                </div>
+            </div>
+            
+            <div class="assistant-message">
+                <p>"Привет! Я Олег — ваш помощник в облаке MOC."</p>
+            </div>
+            
+            <div class="assistant-actions">
+                <button class="action-btn">
+                    <i class="fas fa-bug"></i> Сообщить об ошибке
+                </button>
+                <button class="action-btn">
+                    <i class="fas fa-comment-dots"></i> Начать диалог
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- JS -->
+    <script src="js/main.js"></script>
+</body>
+</html>
